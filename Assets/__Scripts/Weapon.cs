@@ -15,7 +15,8 @@ public enum WeaponType
     phaser, // [NI] Shots that move in waves
     missile, // [NI] Homing missiles
     laser, // [NI] Damage over time
-    shield // Raise shieldLevel
+    shield, // Raise shieldLevel
+    stardust
 }
 
 /// <summary>
@@ -26,14 +27,14 @@ public enum WeaponType
 [System.Serializable]
 public class WeaponDefinition
 {
-    public WeaponType type = WeaponType.none;
+    public WeaponType type;
     public string letter; // Letter to show on the power-up
-    public Color color = Color.white; // Color of Collar & power-up
+    public Color color; // Color of Collar & power-up
     public GameObject projectilePrefab; // Prefab for projectiles
-    public Color projectileColor = Color.white;
-    public float damageOnHit = 0; // Amount of damage caused
-    public float continuousDamage = 0; // Damage per second (Laser)
-    public float delayBetweenShots = 0;
+    public Color projectileColor;
+    public float damageOnHit; // Amount of damage caused
+    public float continuousDamage; // Damage per second (Laser)
+    public float delayBetweenShots;
     public float velocity = 20; // Speed of projectiles
 }
 public class Weapon : MonoBehaviour {
@@ -41,11 +42,12 @@ public class Weapon : MonoBehaviour {
 
     [Header("Set Dynamically")]
     [SerializeField]
-    private WeaponType _type = WeaponType.none;
+    private WeaponType _type = WeaponType.laser;
     public WeaponDefinition def;
     public GameObject collar;
     public float lastShotTime; // Time last shot was fired
     private Renderer collarRend;
+    public GameObject hero;
 
     private void Start()
     {
@@ -118,6 +120,7 @@ public class Weapon : MonoBehaviour {
         switch (type)
         {
             case WeaponType.blaster:
+                Debug.Log("Blaster");
                 p = MakeProjectile();
                 p.rigid.velocity = vel;
                 break;
@@ -131,6 +134,22 @@ public class Weapon : MonoBehaviour {
                 p = MakeProjectile(); // Make left Projectile
                 p.transform.rotation = Quaternion.AngleAxis(-10, Vector3.back);
                 p.rigid.velocity = p.transform.rotation * vel;
+                p = MakeProjectile(); // Make right Projectile
+                p.transform.rotation = Quaternion.AngleAxis(20, Vector3.back);
+                p.rigid.velocity = p.transform.rotation * vel;
+                p = MakeProjectile(); // Make left Projectile
+                p.transform.rotation = Quaternion.AngleAxis(-20, Vector3.back);
+                p.rigid.velocity = p.transform.rotation * vel;
+                break;
+
+            case WeaponType.stardust:
+
+                Debug.Log("Laser");           
+                p = MakeProjectile();
+                //Vector3 tr = new Vector3(0,15,0);
+                Vector3 trz = new Vector3(Random.Range(-9, 10), Random.Range(7, 20), 0);
+                p.rigid.velocity = trz;
+                //p.transform.Translate(tr);      
                 break;
         }
     }
